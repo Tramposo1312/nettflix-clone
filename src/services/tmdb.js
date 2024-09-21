@@ -11,5 +11,9 @@ const tmdbApi = axios.create({
 });
 
 export const getTrending = () => tmdbApi.get('/trending/all/week');
+export const getMoviesByGenre = (genreId) => tmdbApi.get('/discover/movie', {
+    params: { with_genres: genreId }
+  });
+export const getGenres = () => tmdbApi.get('/genre/movie/list');
 export const getMovieDetails = (movieId) => tmdbApi.get(`/movie/${movieId}`);
 export const searchMovies = (query) => tmdbApi.get('/search/movie', { params: { query } });
