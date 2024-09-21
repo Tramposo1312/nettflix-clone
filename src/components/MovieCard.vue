@@ -1,3 +1,4 @@
+<!-- src/components/MovieCard.vue -->
 <template>
     <div class="movie-card" @mouseenter="expanded = true" @mouseleave="expanded = false">
       <img 
@@ -8,11 +9,10 @@
         :class="{ 'loaded': imageLoaded }"
       >
       <div v-else class="placeholder"></div>
-      <h3>{{ movie.title || movie.name }}</h3>
       <div v-if="expanded" class="expanded-info">
-        <p>{{ movie.overview }}</p>
-        <p>Rating: {{ movie.vote_average }}/10</p>
-        <p>Release Date: {{ movie.release_date }}</p>
+        <h3>{{ movie.title || movie.name }}</h3>
+        <p>Rating: {{ movie.vote_average.toFixed(1) }}/10</p>
+        <p>{{ movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A' }}</p>
       </div>
     </div>
   </template>
@@ -52,7 +52,7 @@
   <style scoped>
   .movie-card {
     position: relative;
-    width: 200px;
+    width: calc(100% / 6 - 1rem);
     margin-right: 1rem;
     transition: all 0.3s ease;
     z-index: 1;
@@ -77,29 +77,29 @@
   
   .placeholder {
     width: 100%;
-    height: 300px;
+    padding-top: 150%; /* 2:3 aspect ratio */
     background-color: #2c3e50;
     border-radius: 8px;
   }
   
-  .movie-card h3 {
-    margin-top: 0.5rem;
-    font-size: 1rem;
-  }
-  
   .expanded-info {
     position: absolute;
-    top: 100%;
+    bottom: 0;
     left: 0;
     right: 0;
     background-color: rgba(0, 0, 0, 0.8);
-    padding: 1rem;
+    padding: 0.5rem;
     border-radius: 0 0 8px 8px;
     transition: opacity 0.3s ease;
   }
   
+  .expanded-info h3 {
+    font-size: 0.9rem;
+    margin: 0 0 0.3rem 0;
+  }
+  
   .expanded-info p {
     font-size: 0.8rem;
-    margin: 0.5rem 0;
+    margin: 0.2rem 0;
   }
   </style>
