@@ -1,6 +1,11 @@
 <!-- src/components/MovieCard.vue -->
 <template>
-    <div class="movie-card" @mouseenter="expanded = true" @mouseleave="expanded = false">
+    <div 
+      class="movie-card" 
+      @mouseenter="startHoverTimer" 
+      @mouseleave="resetHover"
+      :class="{ 'hovered': isHovered, 'zoomed': isZoomed }"
+    >
       <img 
         v-if="isIntersecting" 
         :src="getImageUrl(movie.poster_path)" 
@@ -9,7 +14,7 @@
         :class="{ 'loaded': imageLoaded }"
       >
       <div v-else class="placeholder"></div>
-      <div v-if="expanded" class="expanded-info">
+      <div v-if="isHovered" class="expanded-info">
         <h3>{{ movie.title || movie.name }}</h3>
         <p>Rating: {{ movie.vote_average.toFixed(1) }}/10</p>
         <p>{{ movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A' }}</p>
@@ -24,11 +29,28 @@
     movie: Object,
   });
   
-  const expanded = ref(false);
   const isIntersecting = ref(false);
   const imageLoaded = ref(false);
+  const isHovered = ref(false);
+  const isZoomed = ref(false);
+  let hoverTimer = null;
   
   const getImageUrl = (path) => `https://image.tmdb.org/t/p/w500${path}`;
+  
+  const startHoverTimer = () => {
+    isHovered.value = true;
+    hoverTimer = setTimeout(() => {
+      isZoomed.value = true;
+    }, 1000); // 1 second delay before zooming
+  };
+  
+  const resetHover = () => {
+    isHovered.value = false;
+    isZoomed.value = false;
+    if (hoverTimer) {
+      clearTimeout(hoverTimer);
+    }
+  };
   
   let observer;
   
@@ -46,6 +68,9 @@
     if (observer) {
       observer.disconnect();
     }
+    if (hoverTimer) {
+      clearTimeout(hoverTimer);
+    }
   });
   </script>
   
@@ -58,9 +83,14 @@
     z-index: 1;
   }
   
-  .movie-card:hover {
+  .movie-card.hovered {
     transform: scale(1.1);
     z-index: 2;
+  }
+  
+  .movie-card.zoomed {
+    transform: scale(1.2);
+    z-index: 3;
   }
   
   .movie-card img {
@@ -68,7 +98,7 @@
     height: auto;
     border-radius: 8px;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease;
   }
   
   .movie-card img.loaded {
